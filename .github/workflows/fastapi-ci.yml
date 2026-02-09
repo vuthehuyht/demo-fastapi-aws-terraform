@@ -1,0 +1,42 @@
+name: FastAPI CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'fastapi-app/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'fastapi-app/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r fastapi-app/requirements.txt
+          
+      - name: Lint with ruff
+        run: |
+          cd fastapi-app
+          ruff check .
+          
+      - name: Check formatting with ruff
+        run: |
+          cd fastapi-app
+          ruff format --check .
+          
+      - name: Run tests
+        run: |
+          cd fastapi-app
+          pytest

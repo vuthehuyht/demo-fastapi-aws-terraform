@@ -1,0 +1,40 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'insfrastructures/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'insfrastructures/**'
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: insfrastructures
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend=false
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ${{ env.WORKING_DIRECTORY }}
