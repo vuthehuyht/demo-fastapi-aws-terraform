@@ -1,0 +1,69 @@
+name: Docker Build CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'fastapi-app/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'fastapi-app/**'
+
+jobs:
+  build-docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate image tag
+        id: tag
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          DATE=$(date +%Y%m%d)
+          echo "tag=sha-${SHORT_SHA}-${DATE}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Load Docker image for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: ./fastapi-app
+          push: false
+          load: true
+          tags: fastapi-app:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify Docker image
+        run: |
+          docker run -d --name test-container -p 8000:8000 fastapi-app:test
+          sleep 5
+          docker exec test-container python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+          docker stop test-container
+
+      - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push Docker image to ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./fastapi-app
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/fastapi-ecs-demo-app:${{ steps.tag.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
