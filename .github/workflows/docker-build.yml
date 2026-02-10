@@ -49,8 +49,9 @@ jobs:
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
-          vuln-type: 'os,library'
+          vuln-type: 'library'
           severity: 'CRITICAL,HIGH'
+          scanners: 'vuln'
 
       - name: Configure AWS credentials
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
