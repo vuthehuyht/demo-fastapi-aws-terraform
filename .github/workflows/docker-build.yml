@@ -52,6 +52,7 @@ jobs:
           vuln-type: 'library'
           severity: 'CRITICAL,HIGH'
           scanners: 'vuln'
+          trivyignores: .trivyignore
 
       - name: Configure AWS credentials
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

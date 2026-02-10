@@ -1,0 +1,10 @@
+# Ignore false positives for build-time dependencies that are false positives or only in build stage
+
+# setuptools/wheel vulnerabilities
+CVE-2022-40897
+CVE-2024-6345
+CVE-2025-47273
+CVE-2026-24049
+
+# jaraco.context is only used during build, not present in final image
+CVE-2026-23949

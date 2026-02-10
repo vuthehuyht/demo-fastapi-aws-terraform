@@ -1,4 +1,0 @@
-# Ignore false positives for build-time dependencies that don't exist in runtime
-
-# jaraco.context is only used during build, not present in final image
-CVE-2026-23949
