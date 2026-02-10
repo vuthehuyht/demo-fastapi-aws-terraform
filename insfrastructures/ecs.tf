@@ -48,7 +48,6 @@ resource "aws_ecs_task_definition" "app" {
           "awslogs-group"         = "/ecs/${var.project_name}-app"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
-          "awslogs-create-group"  = "true"
         }
       }
     }
