@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +21,7 @@ jobs:
         run: |
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           DATE=$(date +%Y%m%d)
-          echo "tag=sha-${SHORT_SHA}-${DATE}" >> $GITHUB_OUTPUT
+          echo "tag=${DATE}-${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -76,3 +77,17 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/fastapi-ecs-demo-app:${{ steps.tag.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Setup Terraform
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Terraform Init & Apply
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ./insfrastructures
+        run: |
+          terraform init
+          terraform apply -auto-approve \
+            -var="image_tag=${{ steps.tag.outputs.tag }}"

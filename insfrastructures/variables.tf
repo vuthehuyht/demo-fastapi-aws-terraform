@@ -38,5 +38,11 @@ variable "container_port" {
 variable "aws_profile" {
   description = "The AWS profile to use"
   type        = string
-  default     = "default"
+  default     = null
+}
+
+variable "image_tag" {
+  description = "The Docker image tag to deploy"
+  type        = string
+  default     = "latest"
 }
