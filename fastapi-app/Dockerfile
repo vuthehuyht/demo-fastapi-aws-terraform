@@ -20,7 +20,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Install dependencies
 COPY pyproject.toml .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir .
+    pip install --no-cache-dir . && \
+    pip install --no-cache-dir --upgrade wheel==0.46.2
 
 
 # --- Stage 2: Final ---
