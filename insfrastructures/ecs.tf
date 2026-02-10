@@ -86,5 +86,8 @@ resource "aws_ecs_service" "app" {
     weight            = 100
   }
 
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
   force_new_deployment = true
 }

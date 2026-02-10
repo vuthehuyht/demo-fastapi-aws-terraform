@@ -15,11 +15,12 @@ resource "aws_lb" "main" {
 
 # Target Group - Defines where the ALB sends traffic
 resource "aws_lb_target_group" "app" {
-  name        = "${var.project_name}-tg"
-  port        = var.container_port
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip" # Required for Fargate
+  name                 = "${var.project_name}-tg"
+  port                 = var.container_port
+  protocol             = "HTTP"
+  vpc_id               = aws_vpc.main.id
+  target_type          = "ip" # Required for Fargate
+  deregistration_delay = 30
 
   health_check {
     healthy_threshold   = "3"
