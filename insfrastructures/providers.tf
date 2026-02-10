@@ -8,7 +8,8 @@ terraform {
     }
   }
 
-  # Uncomment this block AFTER Phase 1 (bootstrapping resources)
+  # Remote Backend: State is stored in S3 and locked via DynamoDB.
+  # Pre-requisite: Run terraform in the 'bootstrap-backend' directory first.
   backend "s3" {
     bucket         = "fastapi-ecs-demo-terraform-state-654654329682"
     key            = "state/terraform.tfstate"
