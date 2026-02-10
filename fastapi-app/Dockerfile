@@ -19,7 +19,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install dependencies
 COPY pyproject.toml .
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel jaraco.context && \
+RUN pip install --no-cache-dir --upgrade pip setuptools==61.0 jaraco.context==6.1.0 && \
     pip install --no-cache-dir .
 
 
