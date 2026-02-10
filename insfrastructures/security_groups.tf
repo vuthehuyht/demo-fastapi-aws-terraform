@@ -14,7 +14,7 @@ resource "aws_security_group" "alb" {
 
   # Allow all outbound traffic
   egress {
-    protocol    = "any"
+    protocol    = "-1"
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
@@ -41,7 +41,7 @@ resource "aws_security_group" "ecs_tasks" {
 
   # Allow all outbound traffic to the internet (e.g., to pull images, call external APIs)
   egress {
-    protocol    = "any"
+    protocol    = "-1"
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
