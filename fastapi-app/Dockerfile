@@ -18,8 +18,10 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir . && \
+    pip install --no-cache-dir --upgrade wheel==0.46.2
 
 
 # --- Stage 2: Final ---

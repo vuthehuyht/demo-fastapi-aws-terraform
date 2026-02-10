@@ -2,7 +2,7 @@
 variable "aws_region" {
   description = "The AWS region to deploy resources in"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-southeast-1"
 }
 
 variable "project_name" {
@@ -33,4 +33,16 @@ variable "container_port" {
   description = "Port to expose for the container"
   type        = number
   default     = 8000
+}
+
+variable "aws_profile" {
+  description = "The AWS profile to use"
+  type        = string
+  default     = null
+}
+
+variable "image_tag" {
+  description = "The Docker image tag to deploy"
+  type        = string
+  default     = "latest"
 }

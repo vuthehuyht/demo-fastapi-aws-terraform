@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "fastapi-app"
-      image     = "${aws_ecr_repository.app.repository_url}:latest"
+      image     = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
       essential = true
       portMappings = [
         {
@@ -48,8 +48,14 @@ resource "aws_ecs_task_definition" "app" {
           "awslogs-group"         = "/ecs/${var.project_name}-app"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
-          "awslogs-create-group"  = "true"
         }
+      }
+      healthCheck = {
+        command     = ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 60
       }
     }
   ])
@@ -67,6 +73,12 @@ resource "aws_ecs_service" "app" {
     subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_tasks.id]
     assign_public_ip = false # Running in private subnets, no public IP needed
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app.arn
+    container_name   = "fastapi-app"
+    container_port   = var.container_port
   }
 
   capacity_provider_strategy {
