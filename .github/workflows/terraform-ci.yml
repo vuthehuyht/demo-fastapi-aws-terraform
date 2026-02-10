@@ -33,3 +33,8 @@ jobs:
         id: validate
         run: terraform validate -no-color
         working-directory: ${{ env.WORKING_DIRECTORY }}
+
+      - name: Terraform Test
+        id: test
+        run: terraform test
+        working-directory: ${{ env.WORKING_DIRECTORY }}
