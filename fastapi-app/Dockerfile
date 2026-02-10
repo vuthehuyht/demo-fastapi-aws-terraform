@@ -18,9 +18,9 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install dependencies
-COPY requirements.txt .
+COPY pyproject.toml .
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel jaraco.context && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir .
 
 
 # --- Stage 2: Final ---
