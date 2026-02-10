@@ -3,12 +3,7 @@ name: Docker Build CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'fastapi-app/**'
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'fastapi-app/**'
 
 jobs:
   build-docker:
