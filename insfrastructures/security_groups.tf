@@ -12,17 +12,19 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow outbound traffic ONLY to the ECS tasks
-  egress {
-    protocol        = "tcp"
-    from_port       = var.container_port
-    to_port         = var.container_port
-    security_groups = [aws_security_group.ecs_tasks.id]
-  }
-
   tags = {
     Name = "${var.project_name}-alb-sg"
   }
+}
+
+# Rule: Allow ALB to send traffic to ECS tasks
+resource "aws_security_group_rule" "alb_egress_ecs" {
+  type                     = "egress"
+  from_port                = var.container_port
+  to_port                  = var.container_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.alb.id
+  source_security_group_id = aws_security_group.ecs_tasks.id
 }
 
 # Security Group governing firewall rules for ECS tasks
@@ -30,14 +32,6 @@ resource "aws_security_group" "ecs_tasks" {
   name        = "${var.project_name}-ecs-tasks-sg"
   description = "Allow inbound access for ECS tasks"
   vpc_id      = aws_vpc.main.id
-
-  # Allow inbound traffic ONLY from the ALB
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.container_port
-    to_port         = var.container_port
-    security_groups = [aws_security_group.alb.id]
-  }
 
   # Allow outbound traffic to the internet ONLY for HTTPS (ECR, Logs, APIs)
   egress {
@@ -50,4 +44,14 @@ resource "aws_security_group" "ecs_tasks" {
   tags = {
     Name = "${var.project_name}-ecs-tasks-sg"
   }
+}
+
+# Rule: Allow ECS tasks to receive traffic from ALB
+resource "aws_security_group_rule" "ecs_ingress_alb" {
+  type                     = "ingress"
+  from_port                = var.container_port
+  to_port                  = var.container_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_tasks.id
+  source_security_group_id = aws_security_group.alb.id
 }
