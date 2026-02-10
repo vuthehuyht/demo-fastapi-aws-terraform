@@ -3,12 +3,7 @@ name: Terraform CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'insfrastructures/**'
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'insfrastructures/**'
 
 jobs:
   terraform:

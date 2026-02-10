@@ -3,12 +3,7 @@ name: FastAPI CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'fastapi-app/**'
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'fastapi-app/**'
 
 jobs:
   test:
